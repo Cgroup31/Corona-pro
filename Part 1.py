@@ -8,7 +8,7 @@ data_df = pd.read_csv('data.csv')
 data2_df = pd.read_csv('data-2.csv')
 data3_df = pd.read_csv('data-3.csv')
 
-# #Query 1: Total deaths by country
+# Query 1: Total deaths by country
 description = 'Total deaths by country'
 data = data2_df.groupby('countriesAndTerritories')['deaths'].sum().reset_index()
 data_sorted = data.sort_values('deaths', ascending=False)
@@ -26,7 +26,7 @@ for i, value in enumerate(data['deaths']):
     plt.text(i, value, label, ha='center', va='bottom')
 plt.show()
 
-#Query 2: Total deaths per population by country, Top 5
+# Query 2: Total deaths per population by country, Top 5
 description = 'Total deaths per population by country, Top 5'
 data = data2_df.groupby('countriesAndTerritories').apply(lambda x: x['deaths'].sum() / x['popData2020'].max()).reset_index(name='deaths_per_population')
 data_sorted = data.sort_values('deaths_per_population', ascending=False)
@@ -40,7 +40,7 @@ plt.title(description)
 plt.axis('equal')
 plt.show()
 
-#Query 3: Worldwide Total Cases by Month for 2020
+# Query 3: Worldwide Total Cases by Month for 2020
 d = data2_df[data2_df['year'] == 2020].groupby('month')['cases'].sum().reset_index()
 d['month'] = d['month'].apply(lambda x: calendar.month_name[int(x)])
 sns.set(style="whitegrid")
@@ -53,7 +53,7 @@ for i, value in enumerate(d['cases']):
 plt.xticks(rotation=45)  # Rotate x-axis labels for better readability
 plt.show()
 
-#Query 4: Total Number of New Cases Worldwide per Year
+# Query 4: Total Number of New Cases Worldwide per Year
 d = data_df.groupby(data_df['year_week'].str[:4])['new_cases'].sum().reset_index()
 sns.set(style="whitegrid")
 sns.barplot(x='year_week', y='new_cases', data=d, palette='Pastel2')
@@ -68,7 +68,7 @@ for i, value in enumerate(d['new_cases']):
 
 plt.show()
 
-#Query 5: Total tests done and Positivity Rate in Germany per week in 2021
+# Query 5: Total tests done and Positivity Rate in Germany per week in 2021
 description = 'Total tests done and Positivity Rate in Germany per week in 2021'
 data = data_df[(data_df['country'] == 'Germany') & data_df['year_week'].str.contains('2021')].reset_index()
 fig, ax1 = plt.subplots()
@@ -81,24 +81,27 @@ ax2 = ax1.twinx()
 ax2.plot(data['year_week'], data['positivity_rate'], color='salmon')  # Change line color to salmon
 ax2.set_ylabel('Positivity Rate', color='red')
 ax2.tick_params(axis='y', labelcolor='red')
-ax1.set_xticklabels([week.split('-W')[1] for week in data['year_week']])
+x_ticks = range(len(data))
+x_labels = [week.split('-W')[1] for week in data['year_week']]
+ax1.set_xticks(x_ticks)
+ax1.set_xticklabels(x_labels, rotation=90)  # Rotate x-axis labels by 90 degrees
 plt.tight_layout()
-plt.xticks(rotation=90)
 plt.show()
 
-#Query 6: Weekly Hospital Occupancy in Austria (2020)
+# Query 6: Weekly Hospital Occupancy in Austria (2020)
 austria_data = data3_df[(data3_df['country'] == 'Austria') & (data3_df['date'].str[:4] == '2020')]
-austria_data['date'] = pd.to_datetime(austria_data['date'])
+austria_data.loc[:, 'date'] = pd.to_datetime(austria_data['date'])
 weekly_data = austria_data.groupby('year_week')['value'].sum().reset_index()
 weekly_data = weekly_data.sort_values('year_week')
-plt.plot(weekly_data['year_week'], weekly_data['value'],color='coral')
+plt.plot(weekly_data['year_week'], weekly_data['value'], color='coral')
 plt.xlabel('Week')
 plt.ylabel('Weekly Hospital Occupancy')
 plt.title('Weekly Hospital Occupancy in Austria (2020)')
 plt.xticks(rotation=90)
 plt.show()
 
-#Query 7: Total cases vs. total deaths in Greece (2021)
+
+# Query 7: Total cases vs. total deaths in Greece (2021)
 italy_2022_data = data2_df[(data2_df['countriesAndTerritories'] == 'Italy') & (data2_df['year'] == 2022)]
 monthly_data = italy_2022_data.groupby('month').sum()
 total_deaths = monthly_data['deaths']
@@ -125,7 +128,7 @@ for i, value in enumerate(data['tests_done']):
 plt.show()
 
 
-#Query 9: Top 5 countries with the lowest death cases for 2021
+# Query 9: Top 5 countries with the lowest death cases for 2021
 description = 'Top 5 countries with the lowest death cases for 2021'
 data = data2_df[data2_df['year'] == 2022].groupby('countriesAndTerritories')['deaths'].sum().nsmallest(5).reset_index()
 plt.bar(data['countriesAndTerritories'], data['deaths'], color='coral')
@@ -139,23 +142,13 @@ for i, value in enumerate(data['deaths']):
 plt.show()
 
 
-#Query 10: Positivity Rate Trend in Cyprus, years 2021-2022
+# Query 10: Positivity Rate Trend in Cyprus, years 2021-2022
 d = data_df[(data_df['country'] == 'Cyprus') & ((data_df['year_week'].str[:4] == '2022') | (data_df['year_week'].str[:4] == '2021'))]
 sns.lineplot(data=d, x="year_week", y="positivity_rate", color='green')
-plt.grid(axis = 'y')
+plt.grid(axis='y')
 plt.xlabel('Year Week')
 plt.xlim('2021-W01', '2022-W52')
 plt.ylabel('Positivity Rate')
 plt.title('Positivity Rate Trend in Cyprus, years 2021-2022')
 plt.xticks(rotation=90)
 plt.show()
-
-
-
-
-
-
-
-
-
-
